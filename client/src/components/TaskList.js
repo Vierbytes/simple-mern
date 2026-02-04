@@ -1,21 +1,32 @@
+// TaskList component - displays all tasks and handles task actions
+// I learned that components can receive data through "props" -
+// tasks is the array of task objects, updateTasks is a function to refresh the list
+
 import React from 'react';
 
+// Get API URL from environment variable (set during build for production)
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const TaskList = ({ tasks, updateTasks }) => {
+  // Handler for deleting a task when user clicks the X button
   const clickDeleteTask = (event, task) => {
     event.preventDefault();
 
-    fetch(`/api/tasks/delete/${task._id}`, {
+    // Send DELETE request to backend with the task's MongoDB _id
+    fetch(`${API_URL}/api/tasks/delete/${task._id}`, {
       method: 'delete',
     })
       .then(res => res.json())
-      .then(() => updateTasks());
+      .then(() => updateTasks()); // Refresh the list after deletion
   };
 
+  // Handler for toggling task completion status
+  // Flips the 'done' boolean when user clicks the checkbox
   const toggleDone = task => {
-    fetch(`/api/tasks/update/${task._id}`, {
+    fetch(`${API_URL}/api/tasks/update/${task._id}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ done: !task.done }),
+      body: JSON.stringify({ done: !task.done }), // Toggle the done status
     }).then(() => updateTasks());
   };
 
